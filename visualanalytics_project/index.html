@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Skin Cancer</title>
+    <style>
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 8px;
+        }
+        /* Creates a small triangle extender for the tooltip */
+        
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 130%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+        /* Style northward tooltips differently */
+        
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 130%;
+            left: 0;
+        }
+        .chart-title {
+            font-family: 'Lato', futura, georgia;
+            letter-spacing: 1px;
+            line-height: 15px;
+            text-transform: Uppercase;
+            text-align: center;
+            color: #525252;
+        }
+    </style>
+    <!--CSS Links-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/dc.css">
+    <link type="text/css" href="css/jquery.toastmessage-min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+    <link href="css/dashboard.css" rel="stylesheet">
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body>
+    <input type="file" id="uploader"  title="Please upload a CSV file to populate the dashboard.">
+   
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a data-toggle="collapse" data-target=".nav-collapse" class="btn btn-navbar">
+                <i class="icon-bar"></i>
+                <img src="images/jh.png" width="125" height="49">
+            </a>
+            
+            <div class="nav-collapse">
+                <ul id="myTab" class="blog-nav nav nav-tabs">
+                    <li class="active"><a href="#Main" data-toggle="tab">Filters</a>
+                    </li>
+                    <li><a href="#Tests" data-toggle="tab">Test Results</a>
+                    </li>
+                    <li><a href="#Specifics" data-toggle="tab">Details</a>
+                    </li>
+                    <br><a class="linked color-green pull-right" href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="Main">
+            <div class="container-fluid">
+                <div id="row" class="row">
+                    <div id="daysInICU" class="chart-title dc-chart">Days in ICU.
+                        <span class="reset" style=""><span class="filter" style=""></span></span>
+                        <br />
+                    </div>
+                    <div id="daysInHospital" class="chart-title dc-chart">Length Of Stay in Hospital.
+                        <span class="reset" style=""><span class="filter" style=""></span></span>
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="surgeryCompletion">Surgery Completion
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="lastFollowUpStatus">Last Follow Up Status
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="ageBarChart">Age
+                        <span class="reset" style=""><span class="filter" style=""></span></span>
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="smoker">Smokers
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="yearsWithCancer">Years With Cancer<span class="reset" style=""> Range: <span class="filter" style=""></span></span>
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="surgicalUrgency">Surgical Urgency
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Start Details Tab-->
+        <div class="tab-pane " id="Specifics">
+            <div class="container-fluid">
+                <div id="row" class="row">
+                    <div class="chart-title dc-chart" id="tumorSize">Tumor Size
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="bmiChart">BMI Chart
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="profilerationRowChart">Perforation (Yes/No)
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End details tab-->
+        <!--Begin Tests Tab-->
+        <div class="tab-pane " id="Tests">
+            <div class="container-fluid">
+                <div id="row" class="row offset4">
+                    <div class="chart-title dc-chart" id="firstTest">Test 1 Results
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="secondTest">Test 2 Results
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="thirdTest">Test 3 Results
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="forthTest">Test 4 Results
+                        <br />
+                    </div>
+                    <div class="chart-title dc-chart" id="fifthTest">Test 5 Results
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Tests tab-->
+        <div class="container-fluid">
+            <div id="row" class="row">
+                <div class="col-md-12">
+                    Filters:
+                    <br />
+                    <!--Filters-->
+                    <div class="chart-title chart-title dc-chart" id="_30DayReoperation">30 day reoperation
+                        <br />
+                    </div>
+                    <div class="chart-title chart-title dc-chart" id="gender">Gender
+                        <br />
+                    </div>
+                    <div class="chart-title chart-title dc-chart" id="cancerGroups">Cancer category
+                        <br />
+                    </div>
+                    <div class="chart-title chart-title dc-chart" id="dischargeLoc">Discharge destination
+                        <br />
+                    </div>
+                    <div class="chart-title chart-title dc-chart" id="_30DayReadmission">30 day readmission
+                        <br />
+                    </div>
+                    <div class="chart-title chart-title dc-chart" id="mortality">Mortality
+                        <br />
+                    </div>
+                </div>
+                <!--End filter group-->
+            </div>
+        </div>
+        <div>
+            <div class="dc-data-count">
+                <span class="filter-count"> </span> selected out of <span class="total-count"></span> records |
+                <a href="javascript:dc.filterAll(); dc.renderAll();">Reset All</a>
+            </div>
+        </div>
+
+        <br />
+        <br />
+        <div style='overflow-x: scroll;'>
+            <table class="table ls-data-table">
+                <thead>
+                    <tr class="header">
+                        <th>Name</th>
+                        <th>IC</th>
+                        <th>Case No</th>
+                        <th>Gender</th>
+                        <th>date of birth</th>
+                        <th>Height (m)</th>
+                        <th>Weight (Kg)</th>
+                        <th>Smoking </th>
+                        <th>Cancer diagnosis date</th>
+                        <th>Cancer category</th>
+                        <th>Staging</th>
+                        <th>Date of last med test</th>
+                        <th>test status</th>
+                        <th>Test1</th>
+                        <th>Test2</th>
+                        <th>Test3</th>
+                        <th>Test4</th>
+                        <th>Test5</th>
+                        <th>Date of surgery</th>
+                        <th>Surgical Urgency</th>
+                        <th>length of stay in ICU (days)</th>
+                        <th>length of stay in hospital</th>
+                        <th>Discharge destination</th>
+                        <th>30 day readmission</th>
+                        <th>Mortality</th>
+                        <th>30 day reoperation</th>
+                        <th>Tumor type (1 to 6)</th>
+                        <th>Maximum tumor diameter (mm)</th>
+                        <th>Perforation (Y/N)</th>
+                        <th>Date last review</th>
+                        <th>Surgery Completion </th>
+                        <th>Last follow up status</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <!-- Bootstrap core JavaScript
+================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="js/ie10-viewport-bug-workaround.js"></script>
+        <!--Start of c3.js-->
+        <script type="text/javascript" src="js/d3.js"></script>
+        <script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="js/dc.js"></script>
+        <script type="text/javascript" src="js/d3.tip.js"></script>
+        <script type="text/javascript" src="js/crossfilter.js"></script>
+        <script type="text/javascript" src="js/hover-dropdown.min.js"></script>
+        <script type="text/javascript" src="js/jquery.toastmessage-min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables.js"></script>
+        <script>
+            function jHealth(data) {
+
+                var dateFormat = d3.time.format("%Y/%m/%_d").parse;
+                var yearFormat = d3.time.format("%y").parse;
+                var numberFormat = d3.format(".2f");
+
+                data.forEach(function(d) {
+                    d.cancerCat = d["Cancer category"];
+                    d.dischargeLoc = d["Discharge destination"];
+                    d._30DayReadmission = d["30 day readmission"];
+                    d.mortality = d["Mortality"];
+                    d._30DayReoperation = d["30 day reoperation"];
+                    d.lengthOfStayICU = parseInt(d["length of stay in ICU (days)"]);
+                    d.lenghtOfStayInHospital = parseInt(d["length of stay in hospital"]);
+                    d.gender = d["Gender"];
+                    d.smoker = d["Smoking "];
+                    d.surgeryCompletion = d["Surgery Completion "];
+
+                    var yr = dateFormat(d["Cancer diagnosis date"]);
+                    d.diagnosedYear = yr.getFullYear();
+                    d.yearsWithCancer = new Date().getFullYear() - yr.getFullYear();
+                    d.ic = d["IC"];
+
+                    var bday = dateFormat(d["date of birth"]);
+                    //d.diagnosedYear = bday.getFullYear();
+                    d.age = new Date().getFullYear() - bday.getFullYear();
+
+                    d.testOne = parseInt(d["Test1"]);
+                    d.testTwo = parseInt(d["Test2"]);
+                    d.testThree = parseInt(d["Test3"]);
+                    d.testFour = parseInt(d["Test4"]);
+                    d.testFive = parseInt(d["Test5"]);
+                    d.testStatus = d["test status"];
+
+                    d.surgicalUrgency = d["Surgical Urgency"];
+
+                    d.lastFollowUpStatus = d["Last follow up status"];
+
+                    d.perforation = d["Perforation (Y/N)"];
+
+                    d.tumorType = d["Tumor type (1 to 6)"];
+                    d.tumorDiameter = parseInt(d["Maximum tumor diameter (mm)"]);
+
+                    //bmi
+                    var wei = parseInt(d["Weight (Kg)"]);
+                    var hei = parseInt(d["Height (m)"]);
+                    d.bmi = wei / ((hei / 130) * (hei / 130));
+                    // console.log(d.bmi);
+
+                });
+
+
+                //var ndx = crossfilter(data);
+                var ndx = crossfilter(data),
+                    runDimension = ndx.dimension(function(d) {
+                        return +d.testStatus;
+                    }),
+                    tumorTypeDimension = ndx.dimension(function(d) {
+                        return +d.tumorType;
+                    }),
+                    runGroup = runDimension.group(),
+                    experimentDimension = ndx.dimension(function(d) {
+                        return d.testStatus;
+                    }),
+                    _1thTestGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.testOne);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.testOne), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    ),
+                    _2thTestGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.testTwo);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.testTwo), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    ),
+                    _3thTestGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.testThree);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.testThree), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    ),
+                    _4thTestGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.testFour);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.testFour), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    ),
+                    _5thTestGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.testFive);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.testFive), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    ),
+                    tumorSizeGroup = experimentDimension.group().reduce(
+                        function(p, v) {
+                            p.push(v.tumorDiameter);
+                            return p;
+                        },
+                        function(p, v) {
+                            p.splice(p.indexOf(v.tumorDiameter), 1);
+                            return p;
+                        },
+                        function() {
+                            return [];
+                        }
+                    );
+
+                var all = ndx.groupAll();
+
+                var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function(d) {
+
+                        return "<span style='color: #f0027f'>" + d.key + "</span> : " + d.value;
+                    });
+
+                // tooltips for pie chart
+                var pieTip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function(d) {
+                        return "<span style='color: #f0027f'>" + d.data.key + "</span> : " + d.value;
+                        //return "<span style='color: #f0027f'>" + d.data.key + "</span> : " + all.value();
+                    });
+
+                // tooltips for bar chart
+                var barTip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function(d) {
+
+                        return "<span style='color: #f0027f'>" + d.data.key + "</span> : " + d.y;
+                    });
+
+
+                var icDimensions = ndx.dimension(function(d) {
+                    return d.ic;
+                });
+
+                var bmiDimensions = ndx.dimension(function(d) {
+
+                    if (d.bmi < 18.5) {
+                        return "Too Thin";
+                    } else if (d.bmi > 18.5 && d.bmi < 22.9) {
+                        return "Low Risk";
+                    } else if (d.bmi > 23 && d.bmi < 27.4) {
+                        return "Moderate Risk";
+                    } else if (d.bmi > 27.5) {
+                        return "High Risk";
+                    } else {
+                        return "Error";
+                    }
+
+                });
+
+                var surgicalUrgencyDimension = ndx.dimension(function(d) {
+                    return d.surgicalUrgency;
+                });
+
+                //get dimensions by type
+                var smokerDimensions = ndx.dimension(function(d) {
+                    if (d.smoker === "Y") {
+                        return "Yes";
+                    } else if (d.smoker === "N") {
+                        return "No";
+                    } else {
+                        return "Unknown";
+                    }
+                });
+
+                var surgeryCompletionDimension = ndx.dimension(function(d) {
+                    if (d.surgeryCompletion === "Y") {
+                        return "Yes";
+                    } else if (d.surgeryCompletion === "N") {
+                        return "No";
+                    } else {
+                        return "Unknown";
+                    }
+                });
+
+                var perforationDimensions = ndx.dimension(function(d) {
+                    if (d.perforation === "Y") {
+                        return "Yes";
+                    } else if (d.perforation === "N") {
+                        return "No";
+                    } else {
+                        return "Unknown";
+                    }
+
+                });
+
+                var cancerCatDimensions = ndx.dimension(function(d) {
+
+                    if (d.cancerCat === "CategoryA") {
+                        return "Cat A";
+                    } else if (d.cancerCat === "CategoryB") {
+                        return "Cat B";
+                    } else if (d.cancerCat === "CategoryC") {
+                        return "Cat C";
+                    } else if (d.cancerCat === "CategoryD") {
+                        return "Cat D";
+                    } else {
+                        return "Error";
+                    }
+
+                    // return d.cancerCat;
+                });
+
+                var lastFollowUpStatusDimensions = ndx.dimension(function(d) {
+                    return "Status: " + d.lastFollowUpStatus;
+                });
+
+                var ageDimensions = ndx.dimension(function(d) {
+                    return d.age;
+                });
+
+                var yearsWithCancerDimensions = ndx.dimension(function(d) {
+                    return d.yearsWithCancer;
+                });
+
+                var dischargeLocDimensions = ndx.dimension(function(d) {
+
+                    if (d.dischargeLoc === "nursing house") {
+                        return "Nurs. Hme";
+                    } else {
+                        return d.dischargeLoc;
+                    }
+
+                    return d.dischargeLoc;
+                });
+
+                var _30DayReadmissionDimensions = ndx.dimension(function(d) {
+                    //return d._30DayReadmission;
+                    if (d._30DayReadmission === "1") {
+                        return "Yes";
+                    } else {
+                        return "No";
+                    }
+                });
+
+                var mortalityDimensions = ndx.dimension(function(d) {
+                    //return d.mortality;
+                    if (d.mortality === "1") {
+                        return "Yes";
+                    } else {
+                        return "No";
+                    }
+                });
+
+                var _30DayReoperationDimensions = ndx.dimension(function(d) {
+                    //return d._30DayReoperation;
+                    if (d._30DayReoperation === "N") {
+                        return "No";
+                    } else if (d._30DayReoperation === "Y (cause1)") {
+                        return "Yes:C1";
+                    } else if (d._30DayReoperation === "Y (cause2)") {
+                        return "Yes:C2";
+                    }
+                });
+
+                var lengthOfStayInHospitalDimension = ndx.dimension(function(d) {
+                    return d.lenghtOfStayInHospital;
+                });
+
+                var lengthOfStayICUDimensions = ndx.dimension(function(d) {
+                    return d.lengthOfStayICU;
+                });
+
+                var genderDimensions = ndx.dimension(function(d) {
+                    // console.log(d);
+                    if (d.gender === "M") {
+                        //console.log(d);
+                        return "Male";
+                    } else {
+                        return "Female";
+                    }
+                });
+
+
+                var cancerCatDimensionsGroup = cancerCatDimensions.group();
+                var dischargeLocDimensionsGroup = dischargeLocDimensions.group();
+                var _30DayReadmissionDimensionsGroup = _30DayReadmissionDimensions.group();
+                var mortalityDimensionsGroup = mortalityDimensions.group();
+                var _30DayReoperationDimensionsGroup = _30DayReoperationDimensions.group();
+                var lengthOfStayICUDimensionsGroup = lengthOfStayICUDimensions.group();
+                var genderGroups = genderDimensions.group();
+                var smokerGroup = smokerDimensions.group();
+                var yearsWithCancerGroup = yearsWithCancerDimensions.group();
+                var icGroup = icDimensions.group();
+                var ageGroup = ageDimensions.group();
+                var surgeryCompletionDateGroup = surgeryCompletionDimension.group();
+                var lastFollowUpStatusGroup = lastFollowUpStatusDimensions.group();
+                var perforationDimensionsGroup = perforationDimensions.group();
+                var lengthOfStayInHospitalGroup = lengthOfStayInHospitalDimension.group();
+                var surgicalUrgencyGroup = surgicalUrgencyDimension.group();
+                var bmiDimensionsGroup = bmiDimensions.group();
+
+                var cancerGroup = dc.pieChart("#cancerGroups");
+                var dischargeLoc = dc.pieChart("#dischargeLoc");
+                var _30DayReadmission = dc.pieChart("#_30DayReadmission");
+                var mortality = dc.pieChart("#mortality");
+                var _30DayReoperation = dc.pieChart("#_30DayReoperation");
+                var daysInICUChart = dc.barChart("#daysInICU");
+                var genderPie = dc.pieChart("#gender");
+                var smokerRowChart = dc.rowChart("#smoker");
+                var yearsWithCancerBarChaer = dc.barChart('#yearsWithCancer');
+                var oneTests = dc.boxPlot("#firstTest");
+                var twoTests = dc.boxPlot("#secondTest");
+                var threeTests = dc.boxPlot("#thirdTest");
+                var fourTests = dc.boxPlot("#forthTest");
+                var fiveTests = dc.boxPlot("#fifthTest");
+                var ageChart = dc.barChart("#ageBarChart");
+                var surgeryCompletionChart = dc.rowChart("#surgeryCompletion");
+                var lastFollowUpStatusRow = dc.rowChart("#lastFollowUpStatus");
+                var profilerationRowChart = dc.rowChart("#profilerationRowChart");
+                var tumorPlot = dc.boxPlot("#tumorSize");
+                var daysInHospitalChart = dc.barChart("#daysInHospital");
+                var surgicalUrgencyRowChart = dc.rowChart("#surgicalUrgency");
+                var bmiChart = dc.barChart("#bmiChart");
+
+                bmiChart
+                    .height(300)
+                    .width(450)
+                    .dimension(bmiDimensions)
+                    .group(bmiDimensionsGroup)
+                    .elasticY(true)
+                    .gap(2)
+                    //			.xUnits(d3.time.days)
+                    // (optional) set filter brush rounding
+                    .round(dc.round.floor)
+                    .xAxisLabel('BMI')
+                    .x(d3.scale.ordinal().domain(["Too Thin", "Low Risk", "Moderate Risk", "High Risk"])) // Need empty val to offset first value
+                    .xUnits(dc.units.ordinal)
+                    .yAxisLabel('Count')
+                    .alwaysUseRounding(true)
+                    .colors(d3.scale.category20b())
+                    //			.xUnits(dc.units.linear())
+                    //.x(d3.scale.linear().domain([0, 16]))
+                    //.x(d3.scale.linear().domain([bmiDimensions.bottom(1)[0].bmi,
+                    //bmiDimensions.top(1)[0].bmi
+                    //]))
+                    .renderHorizontalGridLines(true)
+                    // customize the filter displayed in the control span
+                    .filterPrinter(function(filters) {
+                        var filter = filters[0],
+                            s = "";
+                        s += filter[0] + " days -> " + filter[1] + " days";
+                        return s;
+                    });
+
+                surgicalUrgencyRowChart.width(180)
+                    .height(180)
+                    //.transitionDuration(750)
+                    .dimension(surgicalUrgencyDimension)
+                    .group(surgicalUrgencyGroup)
+                    .renderLabel(true)
+                    .gap(2)
+                    .title(function(d) {
+                        ""
+                    })
+                    .elasticX(true)
+                    .colors(d3.scale.category10())
+                    .xAxis().ticks(5).tickFormat(d3.format("s"));
+
+
+                daysInHospitalChart
+                    .height(180)
+                    .dimension(lengthOfStayInHospitalDimension)
+                    .group(lengthOfStayInHospitalGroup)
+                    .elasticY(true)
+                    .gap(2)
+                    //			.xUnits(d3.time.days)
+                    // (optional) set filter brush rounding
+                    .round(dc.round.floor)
+                    .xAxisLabel('Days in Hospital')
+                    .yAxisLabel('Count')
+                    .alwaysUseRounding(true)
+                    .colors(d3.scale.category20b())
+                    //			.xUnits(dc.units.linear())
+                    //.x(d3.scale.linear().domain([0, 16]))
+                    .x(d3.scale.linear().domain([lengthOfStayInHospitalDimension.bottom(1)[0].lenghtOfStayInHospital,
+                        lengthOfStayInHospitalDimension.top(1)[0].lenghtOfStayInHospital
+                    ]))
+                    .renderHorizontalGridLines(true)
+                    // customize the filter displayed in the control span
+                    .filterPrinter(function(filters) {
+                        var filter = filters[0],
+                            s = "";
+                        s += filter[0] + " days -> " + filter[1] + " days";
+                        return s;
+                    });
+
+                tumorPlot
+                    .width(450)
+                    .height(300)
+                    .dimension(tumorTypeDimension)
+                    .group(tumorSizeGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+
+
+                profilerationRowChart.width(300)
+                    .height(300)
+                    //.transitionDuration(750)
+                    .dimension(perforationDimensions)
+                    .group(perforationDimensionsGroup)
+                    .renderLabel(true)
+                    .gap(2)
+                    .title(function(d) {
+                        ""
+                    })
+                    .elasticX(true)
+                    .colors(d3.scale.category10())
+                    .xAxis().ticks(5).tickFormat(d3.format("s"));
+
+                lastFollowUpStatusRow.width(180)
+                    .height(180)
+                    //.transitionDuration(750)
+                    .dimension(lastFollowUpStatusDimensions)
+                    .group(lastFollowUpStatusGroup)
+                    .renderLabel(true)
+                    .gap(2)
+                    .title(function(d) {
+                        ""
+                    })
+                    .elasticX(true)
+                    .colors(d3.scale.category10())
+                    .xAxis().ticks(5).tickFormat(d3.format("s"));
+
+                surgeryCompletionChart.width(180)
+                    .height(180)
+                    //.transitionDuration(750)
+                    .dimension(surgeryCompletionDimension)
+                    .group(surgeryCompletionDateGroup)
+                    .renderLabel(true)
+                    .gap(2)
+                    .title(function(d) {
+                        ""
+                    })
+                    .elasticX(true)
+                    .colors(d3.scale.category10())
+                    .xAxis().ticks(5).tickFormat(d3.format("s"));
+
+
+                ageChart
+                    .height(180)
+                    .dimension(ageDimensions)
+                    .group(ageGroup)
+                    .elasticY(true)
+                    .gap(2)
+                    //			.xUnits(d3.time.days)
+                    // (optional) set filter brush rounding
+                    .round(dc.round.floor)
+                    .xAxisLabel('Age Distribution')
+                    .yAxisLabel('Count')
+                    .alwaysUseRounding(true)
+                    .colors(d3.scale.category20b())
+                    //			.xUnits(dc.units.linear())
+                    //.x(d3.scale.linear().domain([0, 16]))
+                    .x(d3.scale.linear().domain([ageDimensions.bottom(1)[0].age,
+                        ageDimensions.top(1)[0].age
+                    ]))
+                    .renderHorizontalGridLines(true)
+                    // customize the filter displayed in the control span
+                    .filterPrinter(function(filters) {
+                        var filter = filters[0],
+                            s = "";
+                        s += "Age: " + filter[0] + " -> Age: " + filter[1];
+                        return s;
+                    });
+
+                oneTests
+                    .width(400)
+                    .height(250)
+                    .dimension(experimentDimension)
+                    .group(_1thTestGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+                twoTests
+                    .width(450)
+                    .height(250)
+                    .dimension(experimentDimension)
+                    .group(_2thTestGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+                threeTests
+                    .width(450)
+                    .height(250)
+                    .dimension(experimentDimension)
+                    .group(_3thTestGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+                fourTests
+                    .width(450)
+                    .height(250)
+                    .dimension(experimentDimension)
+                    .group(_4thTestGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+                fiveTests
+                    .width(450)
+                    .height(250)
+                    .dimension(experimentDimension)
+                    .group(_5thTestGroup)
+                    .elasticY(true)
+                    //.title("Test5")
+                    .elasticX(true);
+
+
+                yearsWithCancerBarChaer
+                    .height(180)
+                    .dimension(yearsWithCancerDimensions)
+                    .group(yearsWithCancerGroup)
+                    .elasticY(true)
+                    .gap(2)
+                    // (optional) set filter brush rounding
+                    .round(dc.round.floor)
+                    .xAxisLabel('Years with Cancer')
+                    .yAxisLabel('Count')
+                    .alwaysUseRounding(true)
+                    .colors(d3.scale.category20())
+                    .x(d3.scale.linear().domain([yearsWithCancerDimensions.bottom(1)[0].yearsWithCancer,
+                        yearsWithCancerDimensions.top(1)[0].yearsWithCancer
+                    ]))
+                    //.x(d3.scale.linear().domain([0, 14]))
+                    .renderHorizontalGridLines(true)
+                    // customize the filter displayed in the control span
+                    .filterPrinter(function(filters) {
+                        var filter = filters[0],
+                            s = "";
+                        s += filter[0] + " years -> " + filter[1] + " years";
+                        return s;
+                    });
+
+
+                smokerRowChart.width(180)
+                    .height(180)
+                    //.transitionDuration(750)
+                    .dimension(smokerDimensions)
+                    .group(smokerGroup)
+                    .renderLabel(true)
+                    .gap(2)
+                    .title(function(d) {
+                        ""
+                    })
+                    .elasticX(true)
+                    .colors(d3.scale.category10())
+                    .xAxis().ticks(5).tickFormat(d3.format("s"));
+
+
+
+                genderPie
+                    .width(150).height(130)
+                    .dimension(genderDimensions)
+                    .group(genderGroups)
+                    .innerRadius(40)
+                    .renderLabel(false)
+                    .colors(d3.scale.category10())
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(45).y(49).itemHeight(10).gap(2));
+
+                mortality
+                    .width(150).height(130)
+                    .dimension(mortalityDimensions)
+                    .group(mortalityDimensionsGroup)
+                    .innerRadius(40)
+                    .renderLabel(false)
+                    .colors(d3.scale.category10())
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(45).y(49).itemHeight(10).gap(2));
+
+                //mortality.render();
+
+                cancerGroup
+                    .width(125).height(130)
+                    .dimension(cancerCatDimensions)
+                    .group(cancerCatDimensionsGroup)
+                    .innerRadius(40)
+                    .colors(d3.scale.category10())
+                    .renderLabel(false)
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(30).y(42.5).itemHeight(10).gap(2));
+
+                //cancerGroup.render();
+
+                //cancerGroup.render();
+
+                dischargeLoc
+                    .width(125).height(130)
+                    .dimension(dischargeLocDimensions)
+                    .group(dischargeLocDimensionsGroup)
+                    .innerRadius(40)
+                    .colors(d3.scale.category10())
+                    .renderLabel(false)
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(30).y(42.5).itemHeight(10).gap(2));
+
+                //dischargeLoc.render();
+
+                _30DayReadmission
+                    .width(125).height(130)
+                    .dimension(_30DayReadmissionDimensions)
+                    .group(_30DayReadmissionDimensionsGroup)
+                    .innerRadius(40)
+                    .colors(d3.scale.category10())
+                    .renderLabel(false)
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(30).y(49).itemHeight(10).gap(2));
+
+                // _30DayReadmission.render();
+
+
+                _30DayReoperation
+                    .width(125).height(130)
+                    .dimension(_30DayReoperationDimensions)
+                    .group(_30DayReoperationDimensionsGroup)
+                    .innerRadius(40)
+                    .colors(d3.scale.category10())
+                    .renderLabel(false)
+                    .title(function(d) {
+                        ""
+                    })
+                    .legend(dc.legend().x(30).y(49).itemHeight(10).gap(2));
+
+                daysInICUChart
+                    .height(180)
+                    .dimension(lengthOfStayICUDimensions)
+                    .group(lengthOfStayICUDimensionsGroup)
+                    .elasticY(true)
+                    .gap(2)
+                    //			.xUnits(d3.time.days)
+                    // (optional) set filter brush rounding
+                    .round(dc.round.floor)
+                    .xAxisLabel('Days in ICU')
+                    .yAxisLabel('Count')
+                    .alwaysUseRounding(true)
+                    .colors(d3.scale.category20b())
+                    //			.xUnits(dc.units.linear())
+                    //.x(d3.scale.linear().domain([0, 16]))
+                    .x(d3.scale.linear().domain([lengthOfStayICUDimensions.bottom(1)[0].lengthOfStayICU,
+                        lengthOfStayICUDimensions.top(1)[0].lengthOfStayICU
+                    ]))
+                    .renderHorizontalGridLines(true)
+                    // customize the filter displayed in the control span
+                    .filterPrinter(function(filters) {
+                        var filter = filters[0],
+                            s = "";
+                        s += filter[0] + " days -> " + filter[1] + " days";
+                        return s;
+                    });
+
+
+                var allDim = ndx.dimension(function(d) {
+                    return +d.diagnosedYear;
+                });
+
+                dc.dataCount(".dc-data-count")
+                    .dimension(ndx)
+                    .group(all);
+
+                datatable = $(".ls-data-table").dataTable({
+                    "bDeferRender": true,
+                    // Restricted data in table to 10 rows, make page load faster
+                    // Make sure your field names correspond to the column headers in your data file. Also make sure to have default empty values.
+                    "aaData": allDim.top(10),
+                    "aaSorting": [
+                        [1, "desc"]
+                    ],
+                    "bDestroy": true,
+                    "iDisplayLength": 10,
+                    "aoColumns": [{
+
+                        "mData": "Name",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "IC",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Case No",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Gender",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "date of birth",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Height (m)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Weight (Kg)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Smoking ",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Cancer diagnosis date",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Cancer category",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Staging",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Date of last med test",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "test status",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Test1",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Test2",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Test3",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Test4",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Test5",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Date of surgery",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Surgical Urgency",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "length of stay in ICU (days)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "length of stay in hospital",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Discharge destination",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "30 day readmission",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Mortality",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "30 day reoperation",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Tumor type (1 to 6)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Maximum tumor diameter (mm)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Perforation (Y/N)",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Date last review",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Surgery Completion ",
+                        "sDefaultContent": " "
+                    }, {
+                        "mData": "Last follow up status",
+                        "sDefaultContent": " "
+                    }]
+                });
+
+
+
+                function RefreshTable() {
+                    datatable.fnClearTable();
+                    datatable.fnAddData(allDim.top(Infinity));
+                    datatable.fnDraw();
+                };
+
+                for (var i = 0; i < dc.chartRegistry.list().length; i++) {
+                    var chartI = dc.chartRegistry.list()[i];
+                    chartI.on("filtered", RefreshTable);
+                }
+                RefreshTable();
+
+
+
+
+                dc.renderAll();
+                d3.selectAll("g.row").call(tip);
+                d3.selectAll("g.row").on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+
+                d3.selectAll(".pie-slice").call(pieTip);
+                d3.selectAll(".pie-slice").on('mouseover', pieTip.show)
+                    .on('mouseout', pieTip.hide);
+
+                d3.selectAll(".bar").call(barTip);
+                d3.selectAll(".bar").on('mouseover', barTip.show)
+                    .on('mouseout', barTip.hide);
+
+
+
+
+                function print_filter(filter) {
+                    var f = eval(filter);
+                    if (typeof(f.length) != "undefined") {} else {}
+                    if (typeof(f.top) != "undefined") {
+                        f = f.top(Infinity);
+                    } else {}
+                    if (typeof(f.dimension) != "undefined") {
+                        f = f.dimension(function(d) {
+                            return "";
+                        }).top(Infinity);
+                    } else {}
+                    console.log(filter + "(" + f.length + ") = " + JSON.stringify(f).replace("[", "[\n\t")
+                        .replace(
+                            /}\,/g, "},\n\t").replace("]", "\n]"));
+                }
+
+
+            }
+
+
+            // CSV Uploader
+            var uploader = document.getElementById("uploader");
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                var data = d3.csv.parse(contents);
+                jHealth(data);
+
+                // remove button, since re-initializing doesn't work for now
+                uploader.parentNode.removeChild(uploader);
+				location.hash = "#" + jmp;
+            };
+
+            uploader.addEventListener("change", handleFiles, false);
+
+            function handleFiles() {
+                var file = this.files[0];
+                reader.readAsText(file);
+            };
+        </script>
+        <script>
+            $(document).keydown(function(e) {
+                if (e.keyCode === 81) {
+                    dc.filterAll();
+                    dc.renderAll();
+                }
+            });
+        </script>
+        <script>
+            function showStickyNoticeToast() {
+                $().toastmessage('showToast', {
+                    text: 'Press the Reset All link or the Q keyboard key to reset the filters.',
+                    sticky: true,
+                    position: 'top-right',
+                    type: 'notice',
+                    closeText: '',
+                    close: function() {
+                        console.log("toast is closed ...");
+                    }
+                });
+            }
+        </script>
+        <script>
+            $(document).ready(function() {
+                showStickyNoticeToast();
+            });
+        </script>
+        <!--End of c3.js-->
+</body>
+
+</html>

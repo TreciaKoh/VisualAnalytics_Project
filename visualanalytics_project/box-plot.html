@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dc.js - Box-Plot Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+</head>
+<body>
+
+<div id="box-test"></div>
+<div id="pie-chart"></div>
+
+<script type="text/javascript" src="js/d3.js"></script>
+<script type="text/javascript" src="js/crossfilter.js"></script>
+<script type="text/javascript" src="js/dc.js"></script>
+<script type="text/javascript">
+
+var chart = dc.boxPlot("#box-test");
+ 
+d3.csv("Skin_Cancer.csv", function(error, experiments) {
+
+  experiments.forEach(function(d) {
+         d.testFive=parseInt(d["Test5"]);
+      d.testStatus=d["test status"];
+  });
+
+  var ndx                 = crossfilter(experiments),
+      runDimension        = ndx.dimension(function(d) {return +d.testStatus;}),
+      runGroup            = runDimension.group(),
+      experimentDimension = ndx.dimension(function(d) {return d.testStatus;}),
+      speedArrayGroup     = experimentDimension.group().reduce(
+        function(p,v) {
+          p.push(v.testFive);
+          return p;
+        },
+        function(p,v) {
+          p.splice(p.indexOf(v.testFive), 1);
+          return p;
+        },
+        function() {
+          return [];
+        }
+      );
+
+  chart
+    .width(768)
+    .height(480)
+    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .dimension(experimentDimension)
+    .group(speedArrayGroup)
+    .elasticY(true)
+	//.title("Test5")
+    .elasticX(true);
+
+  dc.renderAll();
+/*
+  var i=0;
+  setInterval(function() {
+    runDimension.filterAll();
+    runDimension.filter([i++,21]);
+    dc.renderAll();
+  }, 2000);
+*/
+});
+
+</script>
+
+</body>
+</html>
