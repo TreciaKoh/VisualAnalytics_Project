@@ -7758,6 +7758,7 @@ dc.boxPlot = function (parent, chartGroup) {
     _chart.plotData = function () {
         var _calculatedBoxWidth = _boxWidth(_chart.effectiveWidth(), _chart.xUnitCount());
 
+    //console.log(_chart.valueAccessor());
         _box.whiskers(_whiskers)
             .width(_calculatedBoxWidth)
             .height(_chart.effectiveHeight())

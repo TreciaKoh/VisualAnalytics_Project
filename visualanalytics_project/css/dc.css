@@ -282,7 +282,7 @@ div.dc-chart {
 }
 
 .dc-chart .box .outlier {
-    fill: none;
+    fill: red;
     stroke: #ccc;
 }
 
